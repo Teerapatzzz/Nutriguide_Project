@@ -1,0 +1,22 @@
+{% extends 'app_general/components/base.html' %}
+
+{% block title %}
+    <title>เพิ่มเมนู</title>
+{% endblock title %}
+    
+{% block content %}
+<h1>เพิ่มเมนู</h1>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h3>จำนวนต่อ100กรัม</h3>
+            <br>
+            {{ form.as_p }}
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+    </div>
+</div>
+{% endblock content %}

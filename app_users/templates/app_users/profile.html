@@ -1,0 +1,72 @@
+{% extends 'app_general/components/base.html' %}
+
+{% block title %}
+    <title>Profile</title>
+{% endblock title %}
+    
+{% block content %}
+<section class="container-md">
+    <div class="container mt-5">
+        <h1> สวัสดี {{ user.username }} </h1>
+        <p>
+            <a href=" {% url 'dashboard' %} ">แดชบอร์ด</a>
+            <a href=" {% url 'profile' %} ">ข้อมูลผู้ใช้</a>
+            <a href=" {% url 'password_change' %} ">เปลี่ยนรหัสผ่าน</a>
+
+        </p>
+        <div class="row justify-content-center">
+            <form action="{% url 'profile' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-field">
+                    {{ form.first_name.label_tag }}
+                    {{ form.first_name }}
+                    {{ form.first_name.errors }}
+                </div>
+
+                <div class="form-field">
+                    {{ form.last_name.label_tag }}
+                    {{ form.last_name }}
+                    {{ form.last_name.errors }}
+                </div>
+
+                <div class="form-field">
+                    {{ extend_form.gender.label_tag }}
+                    {{ extend_form.gender }}
+                    {{ extend_form.gender.errors }}
+                </div>
+
+                <div class="form-field">
+                    {{ extend_form.date_of_birth.label_tag }}
+                    {{ extend_form.date_of_birth }}
+                    {{ extend_form.date_of_birth.errors }}
+                </div>
+
+                <div class="form-field">
+                    {{ extend_form.height.label_tag }}
+                    {{ extend_form.height }}
+                    {{ extend_form.height.errors }}
+                </div>
+
+                <div class="form-field">
+                    {{ extend_form.weight.label_tag }}
+                    {{ extend_form.weight }}
+                    {{ extend_form.weight.errors }}
+                </div>
+
+                <div class="form-field">
+                    {{ extend_form.activity_level.label_tag }}
+                    {{ extend_form.activity_level }}
+                    {{ extend_form.activity_level.errors }}
+
+                </div>
+
+
+                <p>
+                    <button class="btn btn-primary" type="submit">บันทึก</button>
+                </p>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

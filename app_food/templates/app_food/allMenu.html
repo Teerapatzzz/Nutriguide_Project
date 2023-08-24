@@ -1,0 +1,36 @@
+{% extends 'app_general/components/base.html' %}
+
+{% block title %}
+    <title>เมนูทั้งหมด</title>
+{% endblock title %}
+    
+{% block content %}
+<h1>เมนูทั้งหมด</h1>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <ul>
+            {% for food in foods %}
+                <li>
+                    <h2>ชื่อไทย</h2>
+                    <p>{{ food.name_of_food_th }}</p>
+                    <h2>Name</h2>
+                    <p>{{ food.name_of_food_eng }}</p>
+                    {% if food.food_image %}
+                    <img src="{{ food.food_image.url }}">
+                    {% endif %}
+                    <h2>แคลอรี่</h2>
+                    <p>{{ food.kcal }}</p>
+                    <h2>โปรตีน</h2>
+                    <p>{{ food.protein }}</p>
+                    <h2>ไขมัน</h2>
+                    <p>{{ food.fat }}</p>
+                    <h2>คาร์โบไฮเดรต</h2>
+                    <p>{{ food.carb }}</p>
+                    <iframe width="560" height="315" src="" frameborder="0" allowfullscreen></iframe>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock content %}
