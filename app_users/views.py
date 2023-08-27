@@ -4,9 +4,15 @@ from django.urls import reverse
 from app_users.forms import RegisterForm
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode ,urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+
 
 from .forms import UserProfileForm, ExtendedProfileForm
-
+from .models import CustomUser
+from .utils.activation_token_generator import activation_token_generator
 # Create your views here.
 def register(request: HttpRequest):
 
@@ -14,9 +20,30 @@ def register(request: HttpRequest):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return HttpResponseRedirect(reverse('home'))
+            #Register User
+            user: CustomUser = form.save(commit=False)
+            user.save()
+            user.is_active = False
+            
+            #login(request, user)
+            #Build email body html
+            context = {
+                "potocol": request.scheme,
+                "host": request.get_host,
+                "uidb64": urlsafe_base64_encode(force_bytes(user.id)),
+                "token": activation_token_generator.make_token(user)
+            }
+            email_body = render_to_string("app_users/activate_email.html",context)
+            #send Email
+
+            email = EmailMessage(
+                to=[user.email], 
+                subject="Activate account หน่อยครับ",
+                body=email_body
+                )
+            email.send()
+            #Redirect to thank you
+            return HttpResponseRedirect(reverse('register_thankyou'))
     else:
         form = RegisterForm()
 
@@ -24,7 +51,33 @@ def register(request: HttpRequest):
     form = RegisterForm()
     context = {'form': form}
     return render(request,'app_users/register.html',context)
+
+def register_thankyou(request: HttpRequest):
+    return render(request,"app_users/register_thankyou.html")
+
+
+def activate(request:HttpRequest, uidb64: str,token: str):
+    title = "Activate account เรียบร้อย"
+    description = "คุณสามารถเข้าสู่ระบบได้เลย"
     
+    #Decode user id
+    id = urlsafe_base64_decode(uidb64).decode()
+
+    try: 
+        user: CustomUser = CustomUser.objects.get(id=id)
+        if not activation_token_generator.check_token(user, token):
+            raise Exception("Check token false")
+        user.is_active = True
+        user.save()
+    except:
+        print("Activate ไม่ผ่าน")
+        title = "Activate account ไม่ผ่าน"
+        description = "ลิงค์ถูกใช้ไปแล้ว หรือ หมดอายุ"
+
+    context = {'title': title,'description':description }
+    return render(request,"app_users/activate.html", context)
+
+
 @login_required
 def dashboard(request: HttpRequest ):
     return render(request,'app_users/dashboard.html')
